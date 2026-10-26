@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#172042">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kootu">
+<title>Kootu Prototype</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@500;600&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#172042;--ink2:#525C80;--ink3:#8A93B2;
+  --paper:#F6F7FB;--card:#FFFFFF;--rule:#E3E8F3;--line:#C9D3EA;
+  --mari:#F4A51C;--mari-s:#FFF1D6;--leaf:#1F9D6B;--leaf-s:#DDF3E9;
+  --hib:#E2453C;--hib-s:#FCE3E1;--sky:#3D6BF0;--sky-s:#E3EAFE;--board:#0F2A2A;
+  --r:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#DCE1EE;font-family:"Instrument Sans",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea,select{font:inherit;color:inherit}
+.ml{font-family:"Noto Sans Malayalam",sans-serif}
+h1,h2,h3,.d{font-family:"Bricolage Grotesque",sans-serif;letter-spacing:-.015em;line-height:1.1}
+#app{max-width:440px;margin:0 auto;min-height:100%;height:100dvh;background:var(--paper);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(23,32,66,.12)}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 96px}
+.top{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;background:var(--paper)}
+.top h1{font-size:24px;flex:1}
+.top .sub{font-size:13px;color:var(--ink3);font-weight:600}
+.back{width:40px;height:40px;border-radius:12px;background:var(--card);display:grid;place-items:center;font-size:20px;box-shadow:0 1px 0 var(--rule)}
+.mode{font-size:12px;font-weight:700;padding:7px 11px;border-radius:999px;background:var(--ink);color:#fff;white-space:nowrap}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 1px 0 var(--rule)}
+.card+.card,.gap{margin-top:12px}
+.lbl{font-size:12px;font-weight:700;color:var(--ink3);margin:18px 2px 8px}
+.row{display:flex;align-items:center;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 16px;border-radius:16px;font-weight:700;font-size:16px;background:var(--ink);color:#fff}
+.btn.alt{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn.gold{background:var(--mari);color:var(--ink)}
+.btn.green{background:var(--leaf)}
+.btn:active,.tile:active,.li:active{transform:scale(.98)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.s0{background:var(--leaf)}.s1{background:var(--mari)}.s2{background:var(--hib)}.s3{background:var(--rule)}
+.li{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border-radius:16px;box-shadow:0 1px 0 var(--rule);width:100%;text-align:left}
+.li+.li{margin-top:8px}
+.li .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none}
+.li .t{flex:1;min-width:0}.li b{display:block;font-size:15px}.li small{color:var(--ink2);font-size:13px;line-height:1.35;display:block}
+.li .chev{color:var(--ink3);font-size:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{border-radius:20px;padding:16px;text-align:left;min-height:118px;display:flex;flex-direction:column;justify-content:space-between}
+.tile b{font-family:"Bricolage Grotesque";font-size:18px;line-height:1.15}
+.tile small{font-size:12px;color:var(--ink2);font-weight:600}
+.tile .em{font-size:28px}
+.tabs{position:absolute;left:0;right:0;bottom:0;display:flex;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--rule);padding:8px 6px calc(env(safe-area-inset-bottom) + 8px);z-index:5}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--ink3);padding:4px 0}
+.tabs button .e{font-size:21px;filter:grayscale(1);opacity:.6}
+.tabs button.on{color:var(--ink)}.tabs button.on .e{filter:none;opacity:1}
+.bar{height:9px;background:var(--rule);border-radius:5px;overflow:hidden;flex:1}.bar i{display:block;height:100%;border-radius:5px}
+.toast{position:absolute;left:16px;right:16px;bottom:96px;background:var(--ink);color:#fff;padding:13px 16px;border-radius:14px;font-size:14px;font-weight:600;z-index:50;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+.toast.on{opacity:1;transform:none}
+.sheet-bg{position:absolute;inset:0;background:rgba(15,20,48,.45);z-index:40;display:flex;align-items:flex-end;animation:fade .2s}
+.sheet{background:var(--paper);width:100%;border-radius:24px 24px 0 0;padding:10px 16px calc(env(safe-area-inset-bottom) + 18px);max-height:88%;overflow:auto;animation:up .25s}
+.sheet .grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 14px}
+.sheet h3{font-size:22px;margin-bottom:6px}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}@keyframes fade{from{opacity:0}}
+.proto{position:absolute;top:calc(env(safe-area-inset-top) + 6px);right:8px;z-index:60;font-size:10px;font-weight:800;color:var(--ink3);letter-spacing:.02em}
+.hand{font-family:Caveat,cursive;font-weight:700;color:var(--hib)}
+.gm{display:grid;gap:4px}.gm .c{height:26px;border-radius:6px}
+.gm .n{font-size:12px;font-weight:700;display:flex;align-items:center;white-space:nowrap;overflow:hidden}
+.gm .h{font-size:9px;font-weight:700;color:var(--ink3);text-align:center;line-height:1.05;display:flex;align-items:flex-end;justify-content:center;height:30px}
+.switch{width:46px;height:28px;border-radius:14px;background:var(--line);position:relative;flex:none;transition:.2s}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on{background:var(--leaf)}.switch.on::after{left:21px}
+.seg{display:flex;background:var(--rule);border-radius:12px;padding:3px}
+.seg button{flex:1;padding:9px;border-radius:9px;font-weight:700;font-size:13px;color:var(--ink2)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* live class */
+.live{position:absolute;inset:0;background:#0B1030;z-index:30;display:flex;flex-direction:column;color:#fff}
+.live .stage{flex:1;display:flex;flex-direction:column;min-height:0}
+.live .tv{flex:1;position:relative;background:#E7ECF7;min-height:0;overflow:hidden}
+.live .bd{flex:1;position:relative;background:var(--board);min-height:0;overflow:hidden}
+@media (orientation:landscape){
+  #app{max-width:none}
+  .live .stage{flex-direction:row}
+}
+.live .ctrl{background:#fff;color:var(--ink);display:flex;align-items:center;gap:6px;padding:8px 10px calc(env(safe-area-inset-bottom) + 8px);flex-wrap:wrap}
+.live .ctrl .pill{font-size:11px}
+.live .cb{padding:9px 12px;border-radius:12px;background:#F1F3F9;font-weight:700;font-size:13px}
+.live .cb.req{background:var(--mari)}
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:82%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.4}
+.msg.b{background:#fff;border-bottom-left-radius:6px;align-self:flex-start;box-shadow:0 1px 0 #F0DFB8}
+.msg.k{background:var(--ink);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
+.msg.sys{align-self:center;background:transparent;color:var(--ink3);font-size:12px;font-weight:700;padding:2px}
+.qr{display:flex;flex-wrap:wrap;gap:8px}
+.qr button{padding:10px 14px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 2px var(--line);font-weight:700;font-size:14px}
+.wave i{display:inline-block;width:5px;border-radius:3px;background:var(--ink);margin:0 2px;animation:w 1s infinite ease-in-out}
+@keyframes w{50%{transform:scaleY(.35)}}
+.check{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-radius:16px}
+.check+.check{margin-top:8px}
+.check .st{margin-left:auto;font-size:13px;font-weight:700}
+.empty{text-align:center;color:var(--ink3);font-size:14px;padding:30px 10px}
+.req-card{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--mari-s)}
+.req-card+.req-card{margin-top:8px}
+.mini{padding:8px 12px;border-radius:10px;font-weight:700;font-size:13px}
+.ins{border-left:5px solid;padding:6px 0 6px 12px;font-size:14px;line-height:1.4}
+.ins+.ins{margin-top:10px}
+.stat{background:#fff;border-radius:16px;padding:12px 6px;text-align:center}
+.stat b{font-family:"Bricolage Grotesque";font-size:26px;display:block}
+.stat small{font-size:11px;color:var(--ink2);font-weight:600}
+textarea{width:100%;border:2px solid var(--line);border-radius:14px;padding:12px;background:#fff;resize:none}
+.inp{display:flex;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);background:#fff;border-top:1px solid var(--rule)}
+.inp input{flex:1;border:2px solid var(--line);border-radius:999px;padding:11px 16px;background:var(--paper);outline:none}
+.inp button{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;font-size:18px;flex:none}
+.prog{height:6px;background:var(--rule);border-radius:3px;overflow:hidden}.prog i{display:block;height:100%;background:var(--leaf)}
+.opt{display:block;width:100%;text-align:left;padding:14px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 2px var(--line);font-weight:600;font-size:15px}
+.opt+.opt{margin-top:8px}.opt.ok{box-shadow:inset 0 0 0 2px var(--leaf);background:var(--leaf-s)}.opt.no{box-shadow:inset 0 0 0 2px var(--hib);background:var(--hib-s)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ================= DATA ================= */
+const SKILLS=["Numbers to 99","Place value","Add with carry","Subtract, borrow","Times tables","Division","Money","Time","Shapes"];
+const KIDS=[
+ {n:"Ammu",std:2,g:[0,1,1,2,3,3,0,1,0],att:92,ins:[["#E2453C","Reads 40 as \"4\" when a number ends in zero. Place value, not subtraction, is the real gap."],["#F4A51C","Asked Buddy the same question 5 times before trying. Needs confidence more than explanation."],["#1F9D6B","Got 4 of 5 borrowing problems right with blocks on screen."]],next:"Ask Ammu to teach the class one example with blocks."},
+ {n:"Adil",std:4,g:[0,0,0,1,1,2,0,2,0],att:71,ins:[["#E2453C","Loses focus after about 2 minutes of talk; left the frame twice on Tuesday."],["#F4A51C","Division facts are guesses — he skips counting groups."],["#1F9D6B","Fast and accurate when practice is a timed game."]],next:"Turn Thursday's division practice into a 3-round race."},
+ {n:"Diya",std:3,g:[0,2,1,2,3,3,1,1,0],att:95,ins:[["#E2453C","Understands in Malayalam, struggles when place value is explained only in English."],["#F4A51C","Writes digits in the wrong column when adding."],["#1F9D6B","Very strong with money and shapes."]],next:"Use mother-tongue support for place value (parents agreed)."},
+ {n:"Rahul",std:3,g:[0,0,0,0,1,1,0,0,0],att:97,ins:[["#1F9D6B","Ready for times tables beyond 5."],["#F4A51C","Rushes word problems without reading them fully."],["#1F9D6B","Helped two classmates in the last session."]],next:"Give Rahul a stretch problem set on tables."},
+ {n:"Fida",std:2,g:[0,1,0,2,2,3,0,1,0],att:88,ins:[["#E2453C","Borrows from the wrong column in 3 of 5 problems."],["#F4A51C","Times tables shaky beyond 2."],["#1F9D6B","Practised 41 minutes this week — the most in the batch."]],next:"Short re-teach of borrowing with blocks."},
+ {n:"Neha",std:3,g:[0,0,1,1,0,1,0,0,0],att:90,ins:[["#F4A51C","Carry mistakes when the sum crosses 100."],["#1F9D6B","Times tables now mastered."],["#1F9D6B","Asks good questions in class."]],next:"Mixed addition practice crossing 100."},
+ {n:"Arjun",std:4,g:[1,2,2,2,3,3,1,2,1],att:64,ins:[["#E2453C","Gaps start at place value; later topics are built on it."],["#E2453C","Attention dropped in 4 of the last 6 classes."],["#F4A51C","Responds well to one-to-one encouragement."]],next:"Suggest a parent call and restart from place value."},
+ {n:"Sana",std:2,g:[0,0,0,1,0,2,0,1,0],att:93,ins:[["#F4A51C","Reads clock times to the hour but not half past."],["#1F9D6B","Borrowing improving with each class."],["#1F9D6B","Very consistent attendance."]],next:"5-minute clock game before class."}
+];
+const SUBJECTS=[["Maths","🔢",true],["English","🔤",false],["Malayalam","അ",false],["EVS","🌱",false],["Hindi","अ",false],["Arabic","ع",false]];
+let S={role:null,stack:[],tab:"home",reqs:[{k:"Ammu",t:"Bathroom break",e:"🚻"},{k:"Adil",t:"Sound problem",e:"🔈"}],
+  liveKids:KIDS.slice(0,6).map(k=>({n:k.n,mic:true,cam:true})),lang:"en",subs:{Maths:true},
+  msgs:[{me:false,t:"Ammu did really well with blocks today. A little practice with coins at home would help."}],
+  watch:false,mother:true,plan:{ch:"Subtraction with borrowing",m:"Base-ten blocks"},training:[100,100,60,0,0],tMod:null};
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+function toast(t){let x=$(".toast");if(!x){x=document.createElement("div");x.className="toast";app.appendChild(x);}x.textContent=t;x.classList.add("on");clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove("on"),2200);}
+function go(screen,arg){S.stack.push({screen,arg});render();}
+function back(){S.stack.pop();render();}
+function home(role){S.role=role;S.stack=[];S.tab="home";render();}
+function sheet(html){closeSheet();const b=document.createElement("div");b.className="sheet-bg";b.innerHTML=`<div class="sheet"><div class="grab"></div>${html}</div>`;b.onclick=e=>{if(e.target===b)closeSheet();};app.appendChild(b);}
+function closeSheet(){document.querySelectorAll(".sheet-bg").forEach(x=>x.remove());}
+function hdr(title,sub,{backBtn=true,right=""}={}){return `<div class="top">${backBtn?`<button class="back" onclick="back()">‹</button>`:""}<div style="flex:1;min-width:0"><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:""}</div>${right}</div>`;}
+function li(ic,bg,t,s,on){return `<button class="li" onclick="${on}"><span class="ic" style="background:${bg}">${ic}</span><span class="t"><b>${t}</b><small>${s}</small></span><span class="chev">›</span></button>`;}
+function tabs(list){return `<nav class="tabs">${list.map(([k,e,l])=>`<button class="${S.tab===k?"on":""}" onclick="S.tab='${k}';S.stack=[];render()"><span class="e">${e}</span>${l}</button>`).join("")}</nav>`;}
+const roleName={child:"Child",teacher:"Teacher",parent:"Parent",train:"Teacher training"};
+const modeBtn=()=>`<button class="mode" onclick="home(null)">${roleName[S.role]} ⇄</button>`;
+function gapMap(kids,compact,onTap){
+  const cols=`${compact?54:62}px repeat(${SKILLS.length},1fr)`;
+  let h=`<div class="gm" style="grid-template-columns:${cols}"><div></div>${SKILLS.map(s=>`<div class="h">${s}</div>`).join("")}`;
+  kids.forEach((k,i)=>{h+=`<div class="n">${k.n}</div>`+k.g.map(v=>`<button class="c s${v}" ${onTap?`onclick="${onTap}(${KIDS.indexOf(k)})"`:""}></button>`).join("");});
+  return h+`</div><div class="row" style="gap:12px;margin-top:10px;font-size:11px;font-weight:700;color:var(--ink2);flex-wrap:wrap"><span class="row" style="gap:5px"><i class="dot s0"></i>Mastered</span><span class="row" style="gap:5px"><i class="dot s1"></i>Shaky</span><span class="row" style="gap:5px"><i class="dot s2"></i>Stuck</span><span class="row" style="gap:5px"><i class="dot s3"></i>Not started</span></div>`;
+}
+
+/* ================= ROLE PICKER ================= */
+function scrRoles(){
+  return `<div class="scroll" style="padding-top:calc(env(safe-area-inset-top) + 40px)">
+   <div class="d" style="font-size:64px;font-weight:800;letter-spacing:-.04em">Kootu</div>
+   <div class="row" style="gap:10px;margin-top:4px"><span class="ml" style="font-size:24px">കൂട്ട്</span><span class="hand" style="font-size:24px">your learning companion</span></div>
+   <p style="font-size:16px;color:var(--ink2);line-height:1.45;margin-top:16px">A real teacher leads. A patient companion practises. Every child's gaps, mapped.</p>
+   <div class="lbl" style="margin-top:28px">Open the app as</div>
+   <div class="grid2">
+    <button class="tile" style="background:var(--mari-s)" onclick="home('child')"><span class="em">🧒</span><span><b>Child</b><br><small>Class, Buddy, notebook</small></span></button>
+    <button class="tile" style="background:var(--sky-s)" onclick="home('teacher')"><span class="em">👩‍🏫</span><span><b>Teacher</b><br><small>Gap map, live controls</small></span></button>
+    <button class="tile" style="background:var(--leaf-s)" onclick="home('parent')"><span class="em">👪</span><span><b>Parent</b><br><small>Weekly report, privacy</small></span></button>
+    <button class="tile" style="background:var(--hib-s)" onclick="home('train')"><span class="em">🎓</span><span><b>Teacher training</b><br><small>Learn to teach on Kootu</small></span></button>
+   </div>
+   <p style="font-size:12px;color:var(--ink3);margin-top:24px;line-height:1.5">Clickable prototype. Names, scores and messages are sample data. No real child data is collected.</p>
+  </div>`;
+}
+
+/* ================= CHILD ================= */
+function childHome(){
+  return hdr("Hi Ammu 👋","Std 2 · Maths with Anjali Miss",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="background:var(--ink);color:#fff">
+     <div style="font-size:12px;font-weight:700;opacity:.7">Next class · today 5:00 PM</div>
+     <div class="d" style="font-size:23px;margin:6px 0 4px">Subtraction with borrowing</div>
+     <div style="font-size:13px;opacity:.75;margin-bottom:14px">Live with Anjali Miss · 40 minutes</div>
+     <button class="btn gold" onclick="go('precheck')">▶ Join class</button>
+   </div>
+   <div class="grid2 gap">
+    <button class="tile" style="background:var(--mari-s)" onclick="S.tab='buddy';render()"><span class="em">🍊</span><span><b>Talk to Buddy</b><br><small>Today: borrowing game</small></span></button>
+    <button class="tile" style="background:var(--leaf-s)" onclick="S.tab='notebook';render()"><span class="em">📒</span><span><b>My notebook</b><br><small>6 notes saved</small></span></button>
+   </div>
+   <div class="lbl">My stars this week</div>
+   <div class="card"><div class="row" style="justify-content:space-between">${["M","T","W","T","F","S","S"].map((d,i)=>`<div style="text-align:center"><div style="font-size:24px">${i<5?"⭐":"☆"}</div><div style="font-size:11px;font-weight:700;color:var(--ink3)">${d}</div></div>`).join("")}</div>
+   <div style="font-size:13px;color:var(--ink2);margin-top:10px">5 days in a row! Keep going.</div></div>
+   <div class="lbl">My subjects</div>
+   ${li("🔢","var(--sky-s)","Maths","Place value · Borrowing","toast('Maths topics open here')")}
+   ${li("🔤","var(--hib-s)","English","Starts next month","toast('English is not in Ammu\\'s plan yet')")}
+  </div>`+tabs([["home","🏠","Home"],["buddy","🍊","Buddy"],["notebook","📒","Notebook"]]);
+}
+function precheck(){
+  const items=[["🎧","Wired headset with mic","Connected"],["📶","Internet","Good · 12 Mbps"],["📷","Camera","Your face is in frame"],["📱","Phone","Landscape on stand"]];
+  return hdr("Before class","Let's check everything works")+`<div class="scroll">
+   ${items.map(([e,t,s])=>`<div class="check"><span style="font-size:24px">${e}</span><b style="font-size:15px">${t}</b><span class="st" style="color:var(--leaf)">✓ ${s}</span></div>`).join("")}
+   <div class="card gap" style="background:var(--sky-s);font-size:14px;line-height:1.45">Turn your phone sideways. Your teacher will be on one side and the board on the other.</div>
+   <p class="hand" style="font-size:22px;margin:18px 4px">Volume is kept at a safe level for children.</p>
+   <button class="btn" onclick="S.live={step:0,hand:false};go('live')">Enter class</button>
+  </div>`;
+}
+function teacherSVG(){return `<svg viewBox="0 0 684 600" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%">
+ <rect width="684" height="600" fill="#E7ECF7"/><rect x="40" y="70" width="250" height="12" fill="#CBD3E6"/>
+ <rect x="50" y="0" width="28" height="70" fill="#9FB2E8"/><rect x="84" y="10" width="28" height="60" fill="#F2C77A"/><rect x="118" y="0" width="28" height="70" fill="#B8DCCB"/><rect x="152" y="6" width="28" height="64" fill="#E9A9A3"/>
+ <path d="M92 600 C110 500 200 460 342 456 C484 460 574 500 592 600Z" fill="#1F7A8C"/>
+ <path d="M250 468 C290 520 300 570 296 600 L230 600 C226 560 210 510 190 484Z" fill="#F4A51C"/>
+ <path d="M300 390 L300 460 C320 482 364 482 384 460 L384 390Z" fill="#B97B57"/>
+ <ellipse cx="342" cy="252" rx="150" ry="178" fill="#1E1A1D"/><ellipse cx="342" cy="272" rx="118" ry="146" fill="#C88B63"/>
+ <ellipse cx="224" cy="280" rx="18" ry="30" fill="#BC7E58"/><ellipse cx="460" cy="280" rx="18" ry="30" fill="#BC7E58"/>
+ <circle cx="224" cy="320" r="9" fill="#F4A51C"/><circle cx="460" cy="320" r="9" fill="#F4A51C"/>
+ <path d="M220 240 C226 140 300 100 352 106 C430 110 470 170 466 242 C440 180 400 150 344 150 C300 165 262 190 220 240Z" fill="#1E1A1D"/>
+ <path d="M272 226 Q298 212 322 222" fill="none" stroke="#2A1F1E" stroke-width="7" stroke-linecap="round"/><path d="M362 222 Q386 212 412 226" fill="none" stroke="#2A1F1E" stroke-width="7" stroke-linecap="round"/>
+ <ellipse cx="298" cy="258" rx="12" ry="14" fill="#2A1F1E"/><ellipse cx="386" cy="258" rx="12" ry="14" fill="#2A1F1E"/><circle cx="302" cy="253" r="4" fill="#fff"/><circle cx="390" cy="253" r="4" fill="#fff"/>
+ <path d="M342 276 Q336 308 330 316 Q340 322 352 318" fill="none" stroke="#9E6544" stroke-width="5" stroke-linecap="round"/>
+ <path d="M296 344 Q342 382 388 344" fill="#8E3B33" stroke="#7A2E28" stroke-width="4"/><path d="M306 348 Q342 362 378 348" fill="#fff"/>
+</svg>`;}
+function cubes(step){
+  // simple CSS-free SVG blocks
+  const cube=(x,y,a,f)=>{const b=a*.5,c=a*.866;return `<polygon points="${x},${y} ${x+c},${y+b} ${x},${y+2*b} ${x-c},${y+b}" fill="${f[0]}"/><polygon points="${x-c},${y+b} ${x},${y+2*b} ${x},${y+2*b+a} ${x-c},${y+b+a}" fill="${f[1]}"/><polygon points="${x},${y+2*b} ${x+c},${y+b} ${x+c},${y+b+a} ${x},${y+2*b+a}" fill="${f[2]}"/>`;};
+  const blue=["#A9C0FF","#3D6BF0","#2A4CC0"],gold=["#FFDB8A","#F4A51C","#C47F08"],lt=["#FFE7B3","#F7C55C","#D99A2B"];
+  let s="";const a=16;
+  const tens=step===0?3:(step===3?1:2);
+  for(let r=0;r<tens;r++)for(let k=0;k<10;k++)s+=cube(30+r*36,200-k*a,a,blue);
+  let ones=4+(step>=1?10:0);
+  if(step===3)ones=6;
+  let i=0;for(let r=0;r<4;r++)for(let c=0;c<4;c++){if(i>=ones)break;s+=cube(170+c*30,120+r*30,a,i<10&&step>=1&&step<3?lt:gold);i++;}
+  const lab=[["3 tens","4 ones"],["2 tens","14 ones"],["2 tens","14 ones"],["1 ten","6 ones"]][step];
+  return `<svg viewBox="0 0 320 260" style="width:100%;height:100%">${s}<text x="60" y="250" fill="#fff" font-family="Bricolage Grotesque" font-weight="700" font-size="15" text-anchor="middle">${lab[0]}</text><text x="215" y="250" fill="#fff" font-family="Bricolage Grotesque" font-weight="700" font-size="15" text-anchor="middle">${lab[1]}</text></svg>`;
+}
+function live(){
+  const L=S.live;const steps=["34 − 18 = ?","Break one ten","14 − 8 = 6","2 tens − 1 ten = 1 ten → 16"];
+  return `<div class="live">
+   <div class="stage">
+    <div class="tv">${teacherSVG()}
+      <span class="pill" style="position:absolute;left:10px;bottom:10px;background:rgba(23,32,66,.8);color:#fff"><i class="dot" style="background:var(--hib)"></i>Anjali Miss · live</span>
+      <button class="pill" style="position:absolute;left:10px;top:calc(env(safe-area-inset-top) + 10px);background:rgba(255,255,255,.9);color:var(--ink)" onclick="leaveClass()">✕ Leave</button>
+    </div>
+    <div class="bd">
+      <div style="position:absolute;left:14px;top:12px;right:14px" class="row"><b class="d" style="font-size:24px;flex:1">${steps[L.step]}</b><span class="pill" style="background:rgba(255,255,255,.12);color:#CFE9E4;font-size:10px">from the visual library</span></div>
+      <div style="position:absolute;left:8px;right:8px;top:50px;bottom:44px">${cubes(L.step)}</div>
+      <div style="position:absolute;left:14px;right:14px;bottom:10px" class="row">
+        <span style="font-size:11px;color:#BFE0DA;flex:1">Board follows the teacher · step ${L.step+1} of 4</span>
+        <button class="mini" style="background:rgba(255,255,255,.15);color:#fff" onclick="S.live.step=(S.live.step+1)%4;render()">Next ›</button>
+      </div>
+      <div style="position:absolute;right:10px;top:46px;width:70px;height:54px;border-radius:10px;background:#DDE6FB;border:2px solid #fff;display:grid;place-items:center;font-size:30px">🧒</div>
+    </div>
+   </div>
+   <div class="ctrl">
+     <span class="pill" style="background:var(--leaf-s);color:var(--leaf)"><i class="dot s0" style="width:8px;height:8px"></i>Headset</span>
+     <button class="pill" style="background:var(--sky-s);color:var(--sky)" onclick="toast('Only your teacher can turn your mic or camera off. Tap Request to ask.')">🔒 Mic · Cam</button>
+     <span style="flex:1"></span>
+     <button class="cb" style="${L.hand?"background:var(--sky);color:#fff":""}" onclick="S.live.hand=!S.live.hand;render();toast(S.live.hand?'Hand raised — Anjali Miss can see it':'Hand lowered')">✋</button>
+     <button class="cb" onclick="toast('Told Anjali Miss you are confused. She will explain again.')">🤔</button>
+     <button class="cb req" onclick="reqSheet()">Request</button>
+   </div>
+  </div>`;
+}
+function leaveClass(){sheet(`<h3>Leave the class?</h3><p style="color:var(--ink2);font-size:14px;margin-bottom:16px">Anjali Miss and your parent will be told you left early.</p><button class="btn alt" onclick="closeSheet()">Stay in class</button><button class="btn" style="margin-top:8px;background:var(--hib)" onclick="closeSheet();S.stack=[];render();toast('You left the class')">Leave</button>`);}
+function reqSheet(){
+  const o=[["☕","I need a break"],["🚻","Bathroom"],["📷","Turn my camera off"],["🔈","I cannot hear"],["😟","I feel unwell"]];
+  sheet(`<h3>Ask your teacher</h3><p style="color:var(--ink2);font-size:14px;margin-bottom:14px">Your teacher decides. You can't mute or turn off the camera yourself.</p>
+   ${o.map(([e,t])=>`<button class="li" onclick="sendReq('${t}','${e}')"><span class="ic" style="background:var(--mari-s)">${e}</span><span class="t"><b>${t}</b></span><span class="chev">›</span></button>`).join("")}`);
+}
+function sendReq(t,e){closeSheet();S.reqs.unshift({k:"Ammu",t,e});toast("Request sent. Waiting for Anjali Miss…");setTimeout(()=>toast("✓ Anjali Miss said yes: "+t.toLowerCase()),2600);}
+
+/* Buddy */
+const BUDDY={
+ start:{b:{en:"Hi Ammu! Today's game: 34 take away 18. First look at the ones. Can 4 ones give away 8?",ml:"ഹായ് അമ്മു! ഇന്നത്തെ കളി: 34-ൽ നിന്ന് 18 കുറയ്ക്കാം. 4 ഒന്നുകളിൽ നിന്ന് 8 എടുക്കാമോ?"},q:[["Yes","y"],["No","n"],["Not sure","idk"]]},
+ y:{b:{en:"Let's count. If you have 4 sweets, can you give away 8? Try again 🙂",ml:"എണ്ണി നോക്കാം. 4 മിഠായിയിൽ നിന്ന് 8 കൊടുക്കാമോ? ഒന്നുകൂടി നോക്കൂ 🙂"},q:[["No, not enough","n"]],hint:1},
+ idk:{b:{en:"That's okay! Small hint: 4 is smaller than 8. So can we take 8 away from 4?",ml:"കുഴപ്പമില്ല! ചെറിയ സൂചന: 4, 8-നേക്കാൾ ചെറുതാണ്. അപ്പോൾ എടുക്കാമോ?"},q:[["No","n"]],hint:2},
+ n:{b:{en:"Right! So we break one ten into ten ones. 4 ones plus 10 ones — how many ones now?",ml:"ശരി! അപ്പോൾ ഒരു പത്ത് പൊട്ടിച്ച് പത്ത് ഒന്നുകളാക്കാം. 4 + 10 = എത്ര ഒന്നുകൾ?"},q:[["14","f"],["10","w"],["40","w"]]},
+ w:{b:{en:"Close! Count them on the board: 4 ones, then 10 more. 5, 6, 7… keep going!",ml:"അടുത്തെത്തി! 4 ഒന്നുകൾ, പിന്നെ 10 കൂടി. 5, 6, 7… തുടരൂ!"},q:[["14","f"]],hint:2},
+ f:{b:{en:"Yes! 14 ones. Now 14 take away 8?",ml:"അതെ! 14 ഒന്നുകൾ. ഇനി 14-ൽ നിന്ന് 8 കുറച്ചാൽ?"},q:[["6","s"],["7","w2"]]},
+ w2:{b:{en:"Almost! Count back from 14, eight times: 13, 12, 11…",ml:"ഏകദേശം! 14-ൽ നിന്ന് പിന്നോട്ട് 8 എണ്ണൂ: 13, 12, 11…"},q:[["6","s"]],hint:2},
+ s:{b:{en:"🌟 Brilliant! 6 ones. And we had 2 tens left, minus 1 ten = 1 ten. So 34 − 18 = 16! I'll tell Anjali Miss you did it.",ml:"🌟 മിടുക്കി! 6 ഒന്നുകൾ. 2 പത്തിൽ നിന്ന് 1 പത്ത് കുറച്ചാൽ 1 പത്ത്. അപ്പോൾ 34 − 18 = 16! അഞ്ജലി ടീച്ചറോട് പറയാം."},q:[["Play again","start"],["Ask Anjali Miss a question","teacher"]],done:1},
+ teacher:{b:{en:"Good idea! I've saved your question for Anjali Miss. She'll answer it in tomorrow's class.",ml:"നല്ല കാര്യം! നിന്റെ ചോദ്യം അഞ്ജലി ടീച്ചർക്ക് അയച്ചു. നാളെ ക്ലാസിൽ പറഞ്ഞുതരും."},q:[["Play again","start"]]}
+};
+let chat=[{node:"start"}];let hints=0;
+function childBuddy(){
+  const t=S.lang;
+  return `<div class="top" style="background:#FFE9BE">${`<div style="font-size:40px">🍊</div>`}<div style="flex:1"><h1>Buddy</h1><div class="sub" style="color:var(--ink2)">5–8 minute game · on today's gap</div></div>
+    <div class="seg" style="width:120px"><button class="${t==="en"?"on":""}" onclick="S.lang='en';render()">EN</button><button class="ml ${t==="ml"?"on":""}" onclick="S.lang='ml';render()">മല</button></div></div>
+   <div class="scroll" id="bscroll" style="background:#FFF8EA;padding-bottom:20px">
+    <div class="chat">
+     ${chat.map(c=>c.me?`<div class="msg k">${c.me}</div>`:`<div class="msg b ${t==="ml"?"ml":""}">${BUDDY[c.node].b[t]}</div>`).join("")}
+    </div>
+    <div class="row" style="margin:16px 0 8px;gap:6px">${[1,2,3].map(i=>`<span class="pill" style="background:${i<=hints?["","var(--leaf-s)","var(--mari-s)","var(--sky-s)"][i]:"#fff"};color:var(--ink2)">${["","Encourage","Small hint","Example"][i]}</span>`).join("")}<span style="font-size:11px;color:var(--ink3);margin-left:auto">hint ladder</span></div>
+    <div class="qr">${BUDDY[chat[chat.length-1].node].q.map(([l,n])=>`<button onclick="say('${l}','${n}')">${l}</button>`).join("")}</div>
+   </div>
+   <div class="inp" style="padding-bottom:calc(env(safe-area-inset-bottom) + 76px)">
+     <button style="flex:1;width:auto;border-radius:999px;background:var(--mari);color:var(--ink);font-weight:700;font-size:15px" onclick="talk()">🎤 Hold to talk</button>
+     <button onclick="toast('Buddy sends new topics and feelings to your teacher')" style="background:var(--sky)">👩‍🏫</button>
+   </div>`+tabs([["home","🏠","Home"],["buddy","🍊","Buddy"],["notebook","📒","Notebook"]]);
+}
+function say(l,n){chat.push({me:l});if(n==="start"){chat=[{node:"start"}];hints=0;}else{chat.push({node:n});const h=BUDDY[n].hint;if(h)hints=Math.max(hints,h);if(n==="n"&&hints<1)hints=1;}render();const sc=$("#bscroll");if(sc)sc.scrollTop=sc.scrollHeight;}
+function talk(){sheet(`<div style="text-align:center;padding:20px 0"><div style="font-size:60px">🍊</div><div class="wave" style="height:50px;display:flex;align-items:center;justify-content:center;margin:14px 0">${[20,36,50,30,44,24,16].map((h,i)=>`<i style="height:${h}px;animation-delay:${i*.1}s"></i>`).join("")}</div><b>Listening…</b><p style="color:var(--ink2);font-size:14px;margin-top:6px">In the real app, Ammu talks and Buddy answers out loud in Malayalam or English.</p></div><button class="btn" onclick="closeSheet();say('14','f')">Done ("fourteen!")</button>`);}
+function childNotebook(){
+  const notes=[["Borrowing: break a ten","Today","🧱","var(--mari-s)"],["Place value — tens and ones","Wed","🔟","var(--sky-s)"],["My drawing: 3 tens 4 ones","Wed","🎨","var(--hib-s)"],["Counting in tens","Mon","🔢","var(--leaf-s)"],["Coins: 10 rupees = ten 1s","Last week","🪙","var(--mari-s)"],["Shapes around my house","Last week","🔺","var(--sky-s)"]];
+  return hdr("My notebook","Saved to the cloud automatically",{backBtn:false,right:modeBtn()})+`<div class="scroll"><div class="grid2">${notes.map(([t,d,e,bg])=>`<button class="tile" style="background:${bg}" onclick="noteSheet('${t}','${e}')"><span class="em">${e}</span><span><b style="font-size:15px">${t}</b><br><small>${d}</small></span></button>`).join("")}</div>
+  <button class="btn alt gap" onclick="toast('Camera opens to photograph a worksheet')">📷 Add a worksheet photo</button></div>`+tabs([["home","🏠","Home"],["buddy","🍊","Buddy"],["notebook","📒","Notebook"]]);
+}
+function noteSheet(t,e){sheet(`<h3>${e} ${t}</h3><div class="card" style="background:var(--board);color:#fff;height:200px;display:grid;place-items:center;margin:12px 0"><div style="text-align:center"><div style="font-size:50px">${e}</div><div style="font-size:13px;opacity:.7;margin-top:8px">Board snapshot from class</div></div></div><p style="font-size:14px;color:var(--ink2);line-height:1.5">Ammu's parents and Anjali Miss can see this note too.</p><button class="btn gap" onclick="closeSheet()">Close</button>`);}
+
+/* ================= TEACHER ================= */
+function teacherHome(){
+  const nReq=S.reqs.length;
+  return hdr("Anjali Miss","Maths · Std 2–3 · Evening batch",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="background:var(--ink);color:#fff"><div style="font-size:12px;font-weight:700;opacity:.7">Next · today 5:00 PM · 8 children</div>
+    <div class="d" style="font-size:22px;margin:6px 0 12px">Subtraction with borrowing</div>
+    <div class="row"><button class="btn gold" onclick="go('tlive')">Start live class</button></div></div>
+   ${nReq?`<div class="lbl">Requests waiting (${nReq})</div>${S.reqs.slice(0,3).map((r,i)=>`<div class="req-card"><span style="font-size:22px">${r.e}</span><div style="flex:1"><b>${r.k}</b><div style="font-size:13px;color:var(--ink2)">${r.t}</div></div><button class="mini" style="background:var(--leaf);color:#fff" onclick="answerReq(${i},1)">Allow</button><button class="mini" style="background:#fff" onclick="answerReq(${i},0)">Not now</button></div>`).join("")}`:""}
+   <div class="lbl">Whole-class pattern</div>
+   <div class="card" style="font-size:14px;line-height:1.45"><b>5 of 8 children</b> are stuck or shaky on borrowing.<div style="color:var(--sky);font-weight:700;margin-top:6px">Suggested: 10-minute place-value warm-up before today's class.</div>
+    <div class="row gap"><button class="mini" style="background:var(--sky);color:#fff" onclick="toast('Warm-up added to today\\'s plan')">Add to plan</button><button class="mini" style="background:var(--rule)" onclick="toast('Dismissed')">Dismiss</button></div></div>
+   <div class="lbl">Today's 3 insights · tap a child</div>
+   ${KIDS.slice(0,4).map((k,i)=>li(k.n[0],["var(--hib-s)","var(--sky-s)","var(--leaf-s)","var(--mari-s)"][i],k.n+" · Std "+k.std,k.ins[0][1],`go('kid',${i})`)).join("")}
+   <button class="btn alt gap" onclick="S.tab='map';render()">See full gap map</button>
+  </div>`+tabs([["home","🏠","Today"],["map","🗺️","Gap map"],["plan","📋","Plan"],["lib","🧱","Library"]]);
+}
+function answerReq(i,ok){const r=S.reqs.splice(i,1)[0];toast(ok?`Allowed: ${r.k} — ${r.t.toLowerCase()}`:`${r.k} was asked to wait a moment`);render();}
+function teacherMap(){
+  return hdr("Class gap map","8 children · 9 skills · tap a square",{backBtn:false,right:modeBtn()})+`<div class="scroll"><div class="card" style="padding:12px">${gapMap(KIDS,true,"openKid")}</div>
+  <p style="font-size:13px;color:var(--ink2);line-height:1.5;margin-top:12px">Updated after every class and every Buddy practice. Colours show where each child stands; they are never shown to other parents.</p></div>`+tabs([["home","🏠","Today"],["map","🗺️","Gap map"],["plan","📋","Plan"],["lib","🧱","Library"]]);
+}
+function openKid(i){go("kid",i);}
+function kid(i){const k=KIDS[i];
+  return hdr(k.n,`Std ${k.std} · attention ${k.att}% this week`)+`<div class="scroll">
+   <div class="card"><div class="lbl" style="margin-top:0">Today's 3 insights</div>${k.ins.map(([c,t])=>`<div class="ins" style="border-color:${c}">${t}</div>`).join("")}</div>
+   <div class="card" style="background:var(--sky-s)"><b>Suggested next step</b><div style="font-size:14px;margin-top:4px">${k.next}</div>
+    <div class="row gap"><button class="mini" style="background:var(--sky);color:#fff" onclick="toast('Added to Thursday\\'s plan')">Add to plan</button><button class="mini" style="background:#fff" onclick="toast('Assigned a 6-minute Buddy game')">Assign Buddy practice</button></div></div>
+   <div class="lbl">Skills</div><div class="card">${SKILLS.map((s,j)=>{const v=k.g[j];return `<div class="row" style="padding:6px 0;font-size:14px"><span style="width:130px;font-weight:600">${s}</span><div class="bar"><i style="width:${[100,60,25,4][v]}%;background:${["var(--leaf)","var(--mari)","var(--hib)","var(--line)"][v]}"></i></div></div>`}).join("")}</div>
+   ${li("💬","var(--mari-s)","Buddy history","All conversations, word for word",`toast('Full Buddy history opens here')`)}
+   ${li("✉️","var(--leaf-s)","Message parents","Last message: yesterday",`toast('Opens chat with ${k.n}\\'s parents')`)}
+  </div>`;
+}
+function tlive(){
+  return hdr("Live class","Subtraction with borrowing · 32:10 left")+`<div class="scroll">
+   <div class="card" style="background:var(--board);color:#fff;height:150px;padding:8px">${cubes(1)}</div>
+   ${S.reqs.length?`<div class="lbl">Requests</div>${S.reqs.slice(0,2).map((r,i)=>`<div class="req-card"><span style="font-size:22px">${r.e}</span><div style="flex:1"><b>${r.k}</b><div style="font-size:13px;color:var(--ink2)">${r.t}</div></div><button class="mini" style="background:var(--leaf);color:#fff" onclick="answerReq(${i},1)">Allow</button></div>`).join("")}`:""}
+   <div class="lbl">Alerts</div>
+   <div class="req-card" style="background:var(--hib-s)"><span style="font-size:22px">⚠️</span><div style="flex:1"><b>Adil left the frame</b><div style="font-size:13px;color:var(--ink2)">40 seconds ago</div></div><button class="mini" style="background:#fff" onclick="toast('Gentle nudge sent to Adil')">Nudge</button></div>
+   <div class="lbl">Children · you control mic and camera</div>
+   ${S.liveKids.map((k,i)=>`<div class="li" style="cursor:default"><span class="ic" style="background:var(--sky-s)">🧒</span><span class="t"><b>${k.n}</b><small>${k.mic?"Mic on":"Muted"} · ${k.cam?"Camera on":"Camera off"}</small></span>
+     <button class="mini" style="background:${k.mic?"var(--rule)":"var(--hib)"};color:${k.mic?"var(--ink)":"#fff"}" onclick="S.liveKids[${i}].mic=!S.liveKids[${i}].mic;render()">🎤</button>
+     <button class="mini" style="background:${k.cam?"var(--rule)":"var(--hib)"};color:${k.cam?"var(--ink)":"#fff"}" onclick="S.liveKids[${i}].cam=!S.liveKids[${i}].cam;render()">📷</button></div>`).join("")}
+   <button class="btn gap" style="background:var(--hib)" onclick="back();toast('Class ended. Insights will be ready in a few minutes.')">End class</button>
+  </div>`;
+}
+function teacherPlan(){
+  const chs=["Place value","Subtraction with borrowing","Addition with carry","Times tables 2–5","Money"];
+  const ms=["Base-ten blocks","Number line","Coins and notes"];
+  return hdr("Lesson plan","Buddy follows your plan and method",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="lbl" style="margin-top:4px">This week's chapter</div>${chs.map(c=>`<button class="opt ${S.plan.ch===c?"ok":""}" onclick="S.plan.ch='${c}';render()">${S.plan.ch===c?"● ":"○ "}${c}</button>`).join("")}
+   <div class="lbl">My method (Buddy uses only this)</div><div class="seg">${ms.map(m=>`<button class="${S.plan.m===m?"on":""}" onclick="S.plan.m='${m}';render()">${m}</button>`).join("")}</div>
+   <div class="lbl">Syllabus</div><div class="seg"><button class="on">CBSE</button><button onclick="toast('Kerala SCERT syllabus can be added later')">SCERT</button><button onclick="toast('ICSE can be added later')">ICSE</button></div>
+   <div class="card gap" style="background:var(--mari-s);font-size:14px;line-height:1.45">Buddy will practise <b>${S.plan.ch.toLowerCase()}</b> using <b>${S.plan.m.toLowerCase()}</b>, and send new topics back to you.</div>
+   <button class="btn gap" onclick="toast('Plan saved. Buddy updated for 8 children.')">Save plan</button>
+  </div>`+tabs([["home","🏠","Today"],["map","🗺️","Gap map"],["plan","📋","Plan"],["lib","🧱","Library"]]);
+}
+function teacherLib(){
+  const v=[["Borrowing: break a ten","🧱","Used 14× · 82% unstuck"],["Tens and ones","🔟","Used 22× · 88%"],["Carry over the line","➕","Used 9× · 74%"],["Clock: half past","🕧","Used 6× · 69%"],["Coins make tens","🪙","Used 11× · 91%"],["Groups for division","🍬","Used 5× · 63%"]];
+  return hdr("Visual library","Ready-made board visuals, tested in class",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="font-size:14px;line-height:1.45;background:var(--sky-s)">Every visual is saved with how many children it helped. The best version rises to the top for every teacher.</div>
+   <div class="grid2 gap">${v.map(([t,e,s])=>`<button class="tile" style="background:#fff;box-shadow:0 1px 0 var(--rule)" onclick="toast('${t} opens on the board')"><span class="em">${e}</span><span><b style="font-size:15px">${t}</b><br><small>${s}</small></span></button>`).join("")}</div>
+   <button class="btn alt gap" onclick="toast('AI image for a new idea — coming in a later version')">✨ Make a new visual (later version)</button>
+  </div>`+tabs([["home","🏠","Today"],["map","🗺️","Gap map"],["plan","📋","Plan"],["lib","🧱","Library"]]);
+}
+
+/* ================= PARENT ================= */
+function parentHome(){
+  const sk=[["Numbers to 99",0],["Place value",1],["Add with carry",1],["Subtract, borrow",2],["Money",0]];
+  return hdr("Ammu's week","20–25 Oct · Maths",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="background:var(--ink);color:#fff"><div style="font-size:12px;opacity:.7;font-weight:700">This week</div><div class="d" style="font-size:21px;margin-top:6px">Mastered counting in tens. Now working on borrowing.</div></div>
+   <div class="grid2 gap" style="grid-template-columns:1fr 1fr 1fr"><div class="stat"><b style="color:var(--leaf)">3/3</b><small>classes</small></div><div class="stat"><b style="color:var(--sky)">92%</b><small>attention</small></div><div class="stat"><b style="color:var(--mari)">34m</b><small>practice</small></div></div>
+   <div class="card gap"><div class="lbl" style="margin-top:0">Skills</div>${sk.map(([n,v])=>`<div class="row" style="padding:5px 0;font-size:14px"><span style="width:130px;font-weight:600">${n}</span><div class="bar"><i style="width:${[100,60,25][v]}%;background:${["var(--leaf)","var(--mari)","var(--hib)"][v]}"></i></div></div>`).join("")}</div>
+   <div class="card" style="background:var(--mari-s);font-size:14px;line-height:1.45"><b>Try at home:</b> count coins in tens and ones while shopping.</div>
+   <div class="lbl">Ammu</div>
+   ${li("▶️","var(--hib-s)","Ask to watch today's class",S.watch?"Request sent — you'll get a link at 5:00 PM":"On request, so children don't feel watched all the time","S.watch=true;render();toast('Request sent to Anjali Miss')")}
+   ${li("📒","var(--leaf-s)","Ammu's notebook","6 notes and drawings","S.role='child';S.tab='notebook';S.stack=[];render()")}
+   ${li("✉️","var(--sky-s)","Message Anjali Miss","Last reply: yesterday","S.tab='msg';render()")}
+  </div>`+tabs([["home","📊","Report"],["subs","📚","Subjects"],["msg","✉️","Teacher"],["privacy","🔐","Privacy"]]);
+}
+function parentSubs(){
+  return hdr("Subjects","Subscribe only where your child needs help",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="font-size:14px;line-height:1.45;background:var(--sky-s)">Every subject up to Std 4. Each one is a separate monthly subscription with its own teacher.</div>
+   <div class="lbl">Ammu · Std 2</div>
+   ${SUBJECTS.map(([n,e])=>`<div class="li" style="cursor:default"><span class="ic ${/[അ]/.test(e)?"ml":""}" style="background:var(--mari-s);font-weight:800">${e}</span><span class="t"><b>${n}</b><small>${S.subs[n]?"Active · 3 classes a week":"Not subscribed"}</small></span><button class="switch ${S.subs[n]?"on":""}" onclick="S.subs['${n}']=!S.subs['${n}'];render();toast(S.subs['${n}']?'${n} added — we will match a teacher':'${n} paused')"></button></div>`).join("")}
+   <div class="lbl">Class times</div>
+   ${li("🗓️","var(--leaf-s)","Mon · Wed · Fri, 5:00 PM","Times chosen around Ammu's day","toast('Pick new slots here')")}
+   <div class="lbl">Teaching language</div>
+   <div class="li" style="cursor:default"><span class="ic" style="background:var(--hib-s)">🗣️</span><span class="t"><b>Mother-tongue support</b><small>English first. Malayalam is used when Ammu needs it to understand an idea.</small></span><button class="switch ${S.mother?"on":""}" onclick="S.mother=!S.mother;render()"></button></div>
+   <div class="card gap" style="font-size:13px;line-height:1.5;color:var(--ink2)">At placement we check Ammu's English. A child learns a concept best in a language they already understand, so this stays on unless you turn it off.</div>
+   <button class="btn alt gap" onclick="go('placement')">Re-run placement check</button>
+  </div>`+tabs([["home","📊","Report"],["subs","📚","Subjects"],["msg","✉️","Teacher"],["privacy","🔐","Privacy"]]);
+}
+function parentMsg(){
+  return `<div class="top"><span class="ic" style="width:42px;height:42px;border-radius:50%;background:var(--sky-s);display:grid;place-items:center">👩‍🏫</span><div style="flex:1"><h1 style="font-size:20px">Anjali Miss</h1><div class="sub">Ammu's Maths teacher</div></div>${modeBtn()}</div>
+  <div class="scroll" id="mscroll" style="padding-bottom:16px"><div class="chat">${S.msgs.map(m=>`<div class="msg ${m.me?"k":"b"}">${m.t}</div>`).join("")}</div></div>
+  <div class="inp" style="padding-bottom:calc(env(safe-area-inset-bottom) + 76px)"><input id="pm" placeholder="Message Anjali Miss" onkeydown="if(event.key==='Enter')sendPM()"><button onclick="sendPM()">➤</button></div>`+tabs([["home","📊","Report"],["subs","📚","Subjects"],["msg","✉️","Teacher"],["privacy","🔐","Privacy"]]);
+}
+function sendPM(){const v=$("#pm").value.trim();if(!v)return;S.msgs.push({me:true,t:v});render();setTimeout(()=>{S.msgs.push({me:false,t:"Thank you! I'll keep that in mind for Ammu's next class. (sample reply)"});if(S.tab==="msg")render();},1200);}
+function parentPrivacy(){
+  return hdr("Privacy and consent","You hold the keys to Ammu's data",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="background:var(--leaf-s)"><b>✓ Consent verified</b><div style="font-size:13px;color:var(--ink2);margin-top:4px">Given by Fathima (mother) on 1 Oct. Required by India's DPDP Act before any child data is used.</div></div>
+   <div class="lbl">What we store</div>
+   ${[["Learning progress and gap map","Yes"],["Buddy conversations","Yes, for the teacher"],["Class video recordings","No (off by default)"],["Location, contacts, ads tracking","Never"]].map(([t,v])=>`<div class="row" style="padding:12px 4px;border-bottom:1px solid var(--rule);font-size:14px"><span style="flex:1">${t}</span><b>${v}</b></div>`).join("")}
+   <div class="lbl">Your controls</div>
+   ${li("⬇️","var(--sky-s)","Download all of Ammu's data","One file, ready in a few minutes","toast('Export started (prototype)')")}
+   ${li("🎥","var(--mari-s)","Allow class recording","Off · only for a stated purpose and time","toast('Recording stays off in this prototype')")}
+   ${li("🗑️","var(--hib-s)","Delete Ammu's data","Removes everything permanently","sheet(`<h3>Delete all data?</h3><p style=\\'color:var(--ink2);font-size:14px;margin-bottom:14px\\'>This would remove Ammu\\'s notes, progress and Buddy history. In this prototype nothing is deleted.</p><button class=\\'btn alt\\' onclick=\\'closeSheet()\\'>Cancel</button>`)")}
+   <p style="font-size:12px;color:var(--ink3);margin-top:16px;line-height:1.5">No ads, no behavioural tracking, no data sold. A teacher sees only her own students.</p>
+  </div>`+tabs([["home","📊","Report"],["subs","📚","Subjects"],["msg","✉️","Teacher"],["privacy","🔐","Privacy"]]);
+}
+/* placement */
+const PL=[{w:"Ball",q:"Tell me what a ball is, in your own words.",a:["Round thing we play with","A fruit","Don't know"],ok:0},{w:"Half",q:"What does 'half' mean?",a:["One of two equal parts","Very big","Don't know"],ok:0},{w:"Ten",q:"Show me ten. Which group has ten?",a:["🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬","🍬🍬🍬🍬🍬🍬🍬","Don't know"],ok:0}];
+let plI=0,plA=[];
+function placement(){
+  if(plI>=PL.length){const sc=plA.filter(x=>x).length;
+    return hdr("Placement result","Used once to choose a starting point")+`<div class="scroll">
+     <div class="card" style="background:var(--leaf-s)"><b class="d" style="font-size:22px">Start: Std 2 · Place value</b><div style="font-size:14px;color:var(--ink2);margin-top:6px;line-height:1.45">${sc}/3 everyday words understood in English. Mother-tongue support recommended for new ideas.</div></div>
+     <div class="card"><b>Matched teacher</b><div class="row gap"><span style="font-size:34px">👩‍🏫</span><div><b>Anjali Miss</b><div style="font-size:13px;color:var(--ink2)">Primary trained · Maths · speaks Malayalam and English</div></div></div></div>
+     <p style="font-size:13px;color:var(--ink3);line-height:1.5;margin:14px 4px">This result sets a starting point and is not kept as a label or profile.</p>
+     <button class="btn" onclick="plI=0;plA=[];back()">Done</button></div>`;}
+  const p=PL[plI];
+  return hdr("Placement check",`Question ${plI+1} of ${PL.length} · for the child`)+`<div class="scroll">
+   <div class="prog"><i style="width:${plI/PL.length*100}%"></i></div>
+   <div class="card gap" style="text-align:center;background:var(--mari-s)"><div style="font-size:13px;font-weight:700;color:var(--ink3)">Everyday word</div><div class="d" style="font-size:40px;margin:6px 0">${p.w}</div><div style="font-size:15px">${p.q}</div><button class="mini gap" style="background:#fff" onclick="toast('🔊 Buddy reads the question aloud')">🔊 Listen</button></div>
+   <div class="gap">${p.a.map((a,i)=>`<button class="opt" onclick="plA.push(${i===p.ok});plI++;render()">${a}</button>`).join("")}</div>
+   <button class="btn alt gap" onclick="toast('🎤 In the app the child answers by talking')">🎤 Answer by talking</button></div>`;
+}
+
+/* ================= TEACHER TRAINING ================= */
+const MODS=[["Welcome to Kootu","How teacher-led AI works","🌱",4],["Running a live class","Controls, requests and attention alerts","🎥",6],["Reading the gap map","Mastered, shaky, stuck — and what to do","🗺️",5],["Working with Buddy","Set your method; read the 3 insights","🍊",5],["Child safety and privacy","Consent, conduct, DPDP basics","🔐",4]];
+function trainHome(){
+  const done=S.training.filter(x=>x===100).length;
+  return hdr("Teacher training","Become a Kootu teacher",{backBtn:false,right:modeBtn()})+`<div class="scroll">
+   <div class="card" style="background:var(--ink);color:#fff"><div style="font-size:12px;opacity:.7;font-weight:700">Your progress</div><div class="d" style="font-size:26px;margin:4px 0 10px">${done} of ${MODS.length} modules</div><div class="prog" style="background:rgba(255,255,255,.2)"><i style="width:${done/MODS.length*100}%;background:var(--mari)"></i></div>
+    <div style="font-size:12px;opacity:.75;margin-top:10px">Finish all five to get a Kootu teaching badge and join a batch.</div></div>
+   <div class="lbl">Modules</div>
+   ${MODS.map(([t,s,e,n],i)=>{const p=S.training[i];return `<button class="li" onclick="go('mod',${i})"><span class="ic" style="background:${p===100?"var(--leaf-s)":p?"var(--mari-s)":"var(--rule)"}">${p===100?"✓":e}</span><span class="t"><b>${i+1}. ${t}</b><small>${s} · ${n} lessons${p&&p<100?" · "+p+"% done":""}</small></span><span class="chev">›</span></button>`}).join("")}
+   <div class="lbl">Practice</div>
+   ${li("🎮","var(--sky-s)","Practice class with sample children","Try the live controls safely","S.role='teacher';S.stack=[];S.tab='home';go('tlive')")}
+   ${done===MODS.length?`<button class="btn green gap" onclick="toast('🎓 Badge earned!')">🎓 Get my badge</button>`:""}
+  </div>`+tabs([["home","🎓","Course"]]);
+}
+function mod(i){const [t,s,e,n]=MODS[i];
+  return hdr(`${i+1}. ${t}`,s)+`<div class="scroll">
+   <div class="card" style="background:var(--board);color:#fff;height:190px;display:grid;place-items:center;text-align:center"><div><div style="font-size:54px">${e}</div><button class="mini gap" style="background:var(--mari);color:var(--ink)" onclick="toast('▶ Lesson video plays here')">▶ Play lesson 1</button></div></div>
+   <div class="lbl">Lessons</div>
+   ${Array.from({length:n},(_,j)=>`<div class="row" style="padding:12px 4px;border-bottom:1px solid var(--rule);font-size:14px"><span>${j<Math.round(S.training[i]/100*n)?"✅":"⬜"}</span><span style="flex:1">Lesson ${j+1}</span><span style="color:var(--ink3);font-size:12px">${4+j} min</span></div>`).join("")}
+   <div class="lbl">Quick check</div>
+   <div class="card"><b style="font-size:15px">A child taps "Request: camera off". What happens?</b>
+    <div class="gap" id="qz">${["The camera turns off at once","You decide, then you switch it","Buddy decides"].map((a,j)=>`<button class="opt" onclick="quiz(this,${j===1},${i})">${a}</button>`).join("")}</div></div>
+  </div>`;
+}
+function quiz(el,ok,i){el.classList.add(ok?"ok":"no");if(ok){S.training[i]=100;toast("Correct! Module complete");setTimeout(back,900);}else toast("Not quite — the teacher always decides");}
+
+/* ================= RENDER ================= */
+function render(){
+  closeSheet();
+  const cur=S.stack[S.stack.length-1];let h="";
+  if(!S.role)h=scrRoles();
+  else if(cur){h=({precheck,live,kid,tlive,placement,mod})[cur.screen](cur.arg);}
+  else if(S.role==="child")h=({home:childHome,buddy:childBuddy,notebook:childNotebook})[S.tab]();
+  else if(S.role==="teacher")h=({home:teacherHome,map:teacherMap,plan:teacherPlan,lib:teacherLib})[S.tab]();
+  else if(S.role==="parent")h=({home:parentHome,subs:parentSubs,msg:parentMsg,privacy:parentPrivacy})[S.tab]();
+  else h=trainHome();
+  app.innerHTML=h+`<div class="proto">PROTOTYPE</div>`;
+  const ms=$("#mscroll");if(ms)ms.scrollTop=ms.scrollHeight;
+  const bs=$("#bscroll");if(bs)bs.scrollTop=bs.scrollHeight;
+}
+render();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
